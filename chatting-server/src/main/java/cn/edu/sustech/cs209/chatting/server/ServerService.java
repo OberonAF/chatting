@@ -18,16 +18,16 @@ public class ServerService implements Runnable {
     private String name;
 
     public ServerService(Socket socket, ServerData serverData) {
-        this.socket=socket;
-        this.serverData=serverData;
+        this.socket = socket;
+        this.serverData = serverData;
     }
 
     private void service() throws IOException, ClassNotFoundException {
-        ois=new ObjectInputStream(socket.getInputStream());
-        Message m=(Message) ois.readObject();
+        ois = new ObjectInputStream(socket.getInputStream());
+        Message m = (Message) ois.readObject();
         switch (m.getType()) {
             case "All":
-                name=m.getData();
+                name = m.getData();
                 serverData.getUsers().put(name, socket);
                 System.out.println("Client " + name + " connect");
                 updateUsers();
@@ -41,35 +41,35 @@ public class ServerService implements Runnable {
     }
 
     private void check_name() throws IOException {
-        List<String> users=new ArrayList<>(serverData.getUsers().keySet());
-        oos=new ObjectOutputStream(socket.getOutputStream());
+        List<String> users = new ArrayList<>(serverData.getUsers().keySet());
+        oos = new ObjectOutputStream(socket.getOutputStream());
         oos.writeObject(users);
         oos.flush();
     }
 
     private void updateUsers() throws IOException {
-        List<String> users=new ArrayList<>(serverData.getUsers().keySet());
+        List<String> users = new ArrayList<>(serverData.getUsers().keySet());
         for (Socket s : serverData.getUsers().values()) {
-            oos=new ObjectOutputStream(s.getOutputStream());
+            oos = new ObjectOutputStream(s.getOutputStream());
             oos.writeObject("1");
             oos.flush();
 
-            oos=new ObjectOutputStream(s.getOutputStream());
+            oos = new ObjectOutputStream(s.getOutputStream());
             oos.writeObject(users);
             oos.flush();
         }
     }
 
     private void createGroup(Message m) throws IOException {
-        List<String> members=new ArrayList<>(
+        List<String> members = new ArrayList<>(
             Arrays.asList(m.getData().substring(1, m.getData().length() - 1).trim().split(", ")));
         serverData.getGroup().put(toString(members), members);
         for (String s : members) {
-            oos=new ObjectOutputStream(serverData.getUsers().get(s).getOutputStream());
+            oos = new ObjectOutputStream(serverData.getUsers().get(s).getOutputStream());
             oos.writeObject("3");
             oos.flush();
 
-            oos=new ObjectOutputStream(serverData.getUsers().get(s).getOutputStream());
+            oos = new ObjectOutputStream(serverData.getUsers().get(s).getOutputStream());
             oos.writeObject(toString(members));
             oos.flush();
         }
@@ -79,31 +79,31 @@ public class ServerService implements Runnable {
         if (serverData.getGroup().containsKey(m.getSendTo())) {
             for (String name : serverData.getGroup().get(m.getSendTo())) {
                 if (!Objects.equals(name, m.getSentBy())) {
-                    Socket s=serverData.getUsers().get(name);
+                    Socket s = serverData.getUsers().get(name);
                     m.setType("Group");
-                    oos=new ObjectOutputStream(s.getOutputStream());
+                    oos = new ObjectOutputStream(s.getOutputStream());
                     oos.writeObject("2");
                     oos.flush();
 
-                    oos=new ObjectOutputStream(s.getOutputStream());
+                    oos = new ObjectOutputStream(s.getOutputStream());
                     oos.writeObject(m);
                     oos.flush();
                 }
             }
         } else {
-            Socket s=serverData.getUsers().get(m.getSendTo());
-            oos=new ObjectOutputStream(s.getOutputStream());
+            Socket s = serverData.getUsers().get(m.getSendTo());
+            oos = new ObjectOutputStream(s.getOutputStream());
             oos.writeObject("2");
             oos.flush();
 
-            oos=new ObjectOutputStream(s.getOutputStream());
+            oos = new ObjectOutputStream(s.getOutputStream());
             oos.writeObject(m);
             oos.flush();
         }
     }
 
     public String toString(List<String> list) {
-        StringBuilder s=new StringBuilder();
+        StringBuilder s = new StringBuilder();
         if (list.size() <= 3) {
             for (String value : list) {
                 s.append(value);

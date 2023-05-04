@@ -10,10 +10,10 @@ public class Message implements Serializable {
     private String data;
 
     public Message(String type, String sentBy, String sendTo, String data) {
-        this.type=type;
-        this.sentBy=sentBy;
-        this.sendTo=sendTo;
-        this.data=data;
+        this.type = type;
+        this.sentBy = sentBy;
+        this.sendTo = sendTo;
+        this.data = data;
     }
 
     public String getType() {
@@ -33,6 +33,6 @@ public class Message implements Serializable {
     }
 
     public void setType(String type) {
-        this.type=type;
+        this.type = type;
     }
 }

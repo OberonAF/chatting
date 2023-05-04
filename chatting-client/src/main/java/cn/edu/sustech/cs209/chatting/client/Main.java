@@ -9,18 +9,17 @@ import java.io.IOException;
 public class Main extends Application {
 
     public static void main(String[] args) {
-
         launch();
     }
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader=new FXMLLoader(getClass().getResource("main.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("main.fxml"));
         stage.setScene(new Scene(fxmlLoader.load()));
         stage.setTitle("Chatting Client");
         stage.show();
 
-        Thread t1=new Thread(new Handler(fxmlLoader.getController()));
+        Thread t1 = new Thread(new Handler(fxmlLoader.getController()));
         t1.setDaemon(true);
         t1.start();
     }

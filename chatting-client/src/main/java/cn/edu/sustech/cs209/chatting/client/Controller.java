@@ -32,28 +32,28 @@ import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Controller implements Initializable {
-    final Socket socket=new Socket("localhost", 8888);
+    final Socket socket = new Socket("localhost", 8888);
 
     @FXML
     ListView<Message> chatContentList;
 
     @FXML
-    ListView<String> chatList=new ListView<>();
+    ListView<String> chatList = new ListView<>();
 
     @FXML
-    TextArea inputArea=new TextArea();
+    TextArea inputArea = new TextArea();
 
     @FXML
-    Label currentUsername=new Label();
+    Label currentUsername = new Label();
 
     @FXML
-    Label currentOnlineCnt=new Label();
+    Label currentOnlineCnt = new Label();
 
     String username;
     String toName;
-    List<String> online=new ArrayList<>();
-    List<String> not_read=new ArrayList<>();
-    Map<String, List<Message>> history=new HashMap<>();
+    List<String> online = new ArrayList<>();
+    List<String> not_read = new ArrayList<>();
+    Map<String, List<Message>> history = new HashMap<>();
 
     public Controller() throws IOException {
     }
@@ -61,17 +61,17 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            ObjectInputStream ois=new ObjectInputStream(socket.getInputStream());
+            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
             online = (List<String>) ois.readObject();
         } catch (IOException | ClassNotFoundException ignored) {
         }
 
-        Dialog<String> dialog=new TextInputDialog();
+        Dialog<String> dialog = new TextInputDialog();
         dialog.setTitle("Login");
         dialog.setHeaderText(null);
         dialog.setContentText("Username:");
 
-        Optional<String> input=dialog.showAndWait();
+        Optional<String> input = dialog.showAndWait();
         if (input.isPresent() && !input.get().isEmpty()) {
             while (input.isPresent() && online.contains(input.get())) {
                 warning("Name exists!");
@@ -80,10 +80,10 @@ public class Controller implements Initializable {
 
             while (input.isPresent() && input.get().contains(",")) {
                 warning("Illegal name format!");
-                input=dialog.showAndWait();
+                input = dialog.showAndWait();
             }
 
-            username=input.get();
+            username = input.get();
             currentUsername.setText("Current Username: " + username);
         } else {
             System.out.println("Invalid username " + input + ", exiting");
@@ -105,20 +105,20 @@ public class Controller implements Initializable {
 
     @FXML
     public void createPrivateChat() {
-        AtomicReference<String> user=new AtomicReference<>();
+        AtomicReference<String> user = new AtomicReference<>();
 
         Stage stage = new Stage();
-        ComboBox<String> userSel=new ComboBox<>();
+        ComboBox<String> userSel = new ComboBox<>();
 
         userSel.getItems().addAll(online);
 
-        Button okBtn=new Button("OK");
+        Button okBtn = new Button("OK");
         okBtn.setOnAction(e -> {
             user.set(userSel.getSelectionModel().getSelectedItem());
             stage.close();
         });
 
-        HBox box=new HBox(60);
+        HBox box = new HBox(60);
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(20, 20, 20, 20));
         box.getChildren().addAll(userSel, okBtn);
@@ -126,7 +126,7 @@ public class Controller implements Initializable {
         stage.showAndWait();
 
         if (userSel.getValue() != null) {
-            toName=userSel.getValue();
+            toName = userSel.getValue();
             inputArea.setEditable(true);
             chatContentList.getItems().clear();
             chatContentList.getItems().addAll(history.get(toName));
@@ -139,12 +139,12 @@ public class Controller implements Initializable {
 
     @FXML
     public void createGroupChat() {
-        List<String> group=new ArrayList<>();
-        List<String> selected=new ArrayList<>();
-        Stage stage=new Stage();
-        VBox vbox=new VBox(5);
+        List<String> group = new ArrayList<>();
+        List<String> selected = new ArrayList<>();
+        Stage stage = new Stage();
+        VBox vbox = new VBox(5);
         for (String s : online) {
-            CheckBox cb=new CheckBox(s);
+            CheckBox cb = new CheckBox(s);
             vbox.getChildren().add(cb);
             cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
                 @Override
@@ -157,13 +157,13 @@ public class Controller implements Initializable {
             });
         }
 
-        Button okBtn=new Button("OK");
+        Button okBtn = new Button("OK");
         okBtn.setOnAction(e -> {
             group.add(username);
             group.addAll(selected);
             if (group.size() > 1){
                 if (history.containsKey(toString(group))) {
-                    toName=toString(group);
+                    toName = toString(group);
                     chatContentList.getItems().clear();
                     chatContentList.getItems().addAll(history.get(toName));
                 } else {
@@ -177,7 +177,7 @@ public class Controller implements Initializable {
             stage.close();
         });
 
-        HBox hbox=new HBox(vbox, okBtn);
+        HBox hbox = new HBox(vbox, okBtn);
         hbox.setAlignment(Pos.CENTER);
         hbox.setPadding(new Insets(20, 20, 20, 20));
         stage.setScene(new Scene(hbox));
@@ -186,7 +186,7 @@ public class Controller implements Initializable {
         if (group.size() > 1) {
             chatContentList.getItems().clear();
             inputArea.setEditable(true);
-            toName=toString(group);
+            toName = toString(group);
         }
     }
 
@@ -194,7 +194,7 @@ public class Controller implements Initializable {
     public void doSendMessage() throws IOException {
         if (inputArea.isEditable()) {
             if (inputArea.getText().length() > 0) {
-                Message m=new Message("One", username, toName, inputArea.getText());
+                Message m = new Message("One", username, toName, inputArea.getText());
                 chatContentList.getItems().add(m);
                 history.get(toName).add(m);
                 inputArea.setText("");
@@ -220,9 +220,9 @@ public class Controller implements Initializable {
                         return;
                     }
 
-                    HBox wrapper=new HBox();
-                    Label nameLabel=new Label(msg.getSentBy());
-                    Label msgLabel=new Label(msg.getData());
+                    HBox wrapper = new HBox();
+                    Label nameLabel = new Label(msg.getSentBy());
+                    Label msgLabel = new Label(msg.getData());
 
                     nameLabel.setPrefSize(50, 20);
                     nameLabel.setWrapText(true);
@@ -263,10 +263,10 @@ public class Controller implements Initializable {
                         return;
                     }
 
-                    HBox wrapper=new HBox();
-                    Label nameLabel=new Label(name);
-                    Label conLabel=new Label();
-                    Label markLabel=new Label();
+                    HBox wrapper = new HBox();
+                    Label nameLabel = new Label(name);
+                    Label conLabel = new Label();
+                    Label markLabel = new Label();
 
                     wrapper.getChildren().addAll(conLabel, nameLabel);
 
@@ -305,15 +305,15 @@ public class Controller implements Initializable {
     }
 
     private void send_name() throws IOException {
-        Message m=new Message("All", username, "server", username);
-        ObjectOutputStream oos=new ObjectOutputStream(socket.getOutputStream());
+        Message m = new Message("All", username, "server", username);
+        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         oos.writeObject(m);
         oos.flush();
     }
 
     private void send_group(String name) throws IOException {
-        Message m=new Message("Group", username, "server", name);
-        ObjectOutputStream oos=new ObjectOutputStream(socket.getOutputStream());
+        Message m = new Message("Group", username, "server", name);
+        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         oos.writeObject(m);
         oos.flush();
     }
@@ -325,14 +325,14 @@ public class Controller implements Initializable {
 
     private void send_message(Message m) throws IOException {
         if (m.getSendTo().contains(", ") || online.contains(m.getSendTo())) {
-            ObjectOutputStream oos=new ObjectOutputStream(socket.getOutputStream());
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             oos.writeObject(m);
             oos.flush();
         }
     }
 
     private void warning(String s) {
-        Alert alert=new Alert(AlertType.INFORMATION);
+        Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle(null);
         alert.setHeaderText(null);
         alert.setContentText(s);
@@ -340,7 +340,7 @@ public class Controller implements Initializable {
     }
 
     public String toString(List<String> list) {
-        StringBuilder s=new StringBuilder();
+        StringBuilder s = new StringBuilder();
         if (list.size() <= 3) {
             for (String value : list) {
                 s.append(value);

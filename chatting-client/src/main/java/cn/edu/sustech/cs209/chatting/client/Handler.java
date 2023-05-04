@@ -21,8 +21,8 @@ public class Handler implements Runnable {
         this.socket=controller.socket;
     }
     private void get_name() throws IOException, ClassNotFoundException {
-        ois=new ObjectInputStream(socket.getInputStream());
-        List<String> users=(List<String>) ois.readObject();
+        ois = new ObjectInputStream(socket.getInputStream());
+        List<String> users = (List<String>) ois.readObject();
         controller.online.clear();
         for (String name : users) {
             if (!Objects.equals(name, controller.username)) {
@@ -35,14 +35,14 @@ public class Handler implements Runnable {
 
         Platform.runLater(() -> {
             controller.chatList.refresh();
-            int cnt=controller.online.size() + 1;
+            int cnt = controller.online.size() + 1;
             controller.currentOnlineCnt.setText("Online: " + cnt);
         });
     }
 
     private void get_message() throws IOException, ClassNotFoundException {
-        ois=new ObjectInputStream(socket.getInputStream());
-        Message m=(Message) ois.readObject();
+        ois = new ObjectInputStream(socket.getInputStream());
+        Message m = (Message) ois.readObject();
         if (Objects.equals(m.getType(), "One")) {
             controller.history.get(m.getSentBy()).add(m);
 
@@ -70,8 +70,8 @@ public class Handler implements Runnable {
     }
 
     private void get_group() throws IOException, ClassNotFoundException {
-        ois=new ObjectInputStream(socket.getInputStream());
-        String groupName=(String) ois.readObject();
+        ois = new ObjectInputStream(socket.getInputStream());
+        String groupName = (String) ois.readObject();
         controller.history.put(groupName, new ArrayList<>());
         Platform.runLater(() -> {
             controller.chatList.getItems().add(0, groupName);
@@ -83,8 +83,8 @@ public class Handler implements Runnable {
 
         try {
             while (socket.isConnected()) {
-                ois=new ObjectInputStream(socket.getInputStream());
-                String type=(String) ois.readObject();
+                ois = new ObjectInputStream(socket.getInputStream());
+                String type = (String) ois.readObject();
                 switch (type) {
                     case "1":
                         get_name();
@@ -99,7 +99,7 @@ public class Handler implements Runnable {
             }
         } catch (IOException | ClassNotFoundException e) {
             Platform.runLater(() -> {
-                Alert alert=new Alert(AlertType.INFORMATION);
+                Alert alert = new Alert(AlertType.INFORMATION);
                 alert.setTitle("Prompt");
                 alert.setHeaderText(null);
                 alert.setContentText("Server closed");
